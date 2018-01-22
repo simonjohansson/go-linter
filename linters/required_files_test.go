@@ -17,7 +17,7 @@ var _ = Describe("RequiredFiles", func() {
 	BeforeEach(func() {
 		fs = afero.NewMemMapFs()
 		config = model.LinterConfig{
-			Path: "/path/to/repo",
+			RepoRoot: "/path/to/repo",
 		}
 	})
 

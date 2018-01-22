@@ -7,7 +7,9 @@ import (
 	"path/filepath"
 	"github.com/simonjohansson/go-linter/linters"
 	"fmt"
+	"syscall"
 	"github.com/spf13/afero"
+	"github.com/simonjohansson/go-linter/manifest"
 )
 
 func getPath(path string) (string, error) {
@@ -38,23 +40,26 @@ func config() (model.LinterConfig, error) {
 
 	return model.LinterConfig{
 		VaultToken: *vaultToken,
-		Path:       p,
+		RepoRoot:   p,
 	}, nil
 }
 
 func main() {
 	config, err := config()
 	if err != nil {
-
-	}
-	l := linters.Linter{
-		Config: config,
-		Fs:     afero.NewOsFs(),
+		fmt.Println(err)
+		syscall.Exit(-1)
 	}
 
-	results, err := l.Lint()
+	results, err := linters.FullLint{Config: config,
+		Linters: []linters.Linter{
+			linters.NewRequiredFilesLinter(afero.NewOsFs(), config),
+			linters.NewRequiredFieldsLinter(),
+		},
+		ManifestReader: manifest.NewManifestReader(afero.NewOsFs())}.Lint()
 	if err != nil {
-
+		fmt.Println(err)
+		syscall.Exit(-1)
 	}
 	for _, result := range results {
 		fmt.Println(result)

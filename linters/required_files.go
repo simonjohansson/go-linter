@@ -11,30 +11,34 @@ type requiredFiles struct {
 	config model.LinterConfig
 }
 
-func NewRequiredFilesLinter(fs afero.Fs, config model.LinterConfig) requiredFiles {
-	return requiredFiles{
-		fs:     fs,
-		config: config,
-	}
+func (r requiredFiles) LintManifest(manifest model.Manifest) (model.Result, error) {
+	panic("implement me")
 }
 
 func (r requiredFiles) Lint() (model.Result, error) {
-	pathToHalfPipeFile := path.Join(r.config.Path, ".halfpipe.io")
+	result := model.Result{
+		Linter: "Required Files",
+	}
+
+	pathToHalfPipeFile := path.Join(r.config.RepoRoot, ".halfpipe.io")
 	exists, err := afero.Exists(r.fs, pathToHalfPipeFile)
 	if err != nil {
 		return model.Result{}, err
 	}
 	if exists == false {
-		return model.Result{
-			"Required Files",
-			[]model.Error{
-				model.Error{
-					Message:       "'.halfpipe.io' file is missing",
-					Documentation: "",
-				},
-			},
-		}, nil
-
+		result.Errors = append(result.Errors, model.Error{
+			Message:       "'.halfpipe.io' file is missing",
+			Documentation: "",
+		})
+		return result, nil
 	}
-	return model.Result{}, nil
+
+	return result, nil
+}
+
+func NewRequiredFilesLinter(fs afero.Fs, config model.LinterConfig) requiredFiles {
+	return requiredFiles{
+		fs:     fs,
+		config: config,
+	}
 }
