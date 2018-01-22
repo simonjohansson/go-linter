@@ -14,7 +14,7 @@ var _ = Describe("RequiredFields", func() {
 			Repo:  model.Repo{Uri: "asdf"},
 			Tasks: []model.Task{model.RunTask{}},
 		}
-		results, _ := linters.NewRequiredFieldsLinter().LintManifest(manifest)
+		results, _ := linters.RequiredFieldsLinter{}.LintManifest(manifest)
 		Expect(len(results.Errors)).To(Equal(1))
 	})
 
@@ -23,7 +23,7 @@ var _ = Describe("RequiredFields", func() {
 			Team:  "asdf",
 			Tasks: []model.Task{model.RunTask{}},
 		}
-		results, _ := linters.NewRequiredFieldsLinter().LintManifest(manifest)
+		results, _ := linters.RequiredFieldsLinter{}.LintManifest(manifest)
 		Expect(len(results.Errors)).To(Equal(1))
 	})
 
@@ -32,7 +32,7 @@ var _ = Describe("RequiredFields", func() {
 			Team: "asdf",
 			Repo: model.Repo{Uri: "asdf"},
 		}
-		results, _ := linters.NewRequiredFieldsLinter().LintManifest(manifest)
+		results, _ := linters.RequiredFieldsLinter{}.LintManifest(manifest)
 		Expect(len(results.Errors)).To(Equal(1))
 	})
 })

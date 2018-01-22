@@ -11,25 +11,34 @@ type Linter interface {
 }
 
 type FullLint struct {
-	Config         model.LinterConfig
-	Linters        []Linter
-	ManifestReader manifest.ManifestReader
+	Config               model.LinterConfig
+	ManifestReader       manifest.ManifestReader
+	RequiredFilesLinter  Linter
+	RequiredFieldsLinter Linter
+	RepoLinter           Linter
 }
 
 func (l FullLint) Lint() ([]model.Result, error) {
 	results := []model.Result{}
-	// First linter should be required files linter...
-	r, err := l.Linters[0].Lint()
+	r, err := l.RequiredFilesLinter.Lint()
 	if err != nil {
 		return []model.Result{}, err
 	}
 	results = append(results, r)
 	if len(r.Errors) != 0 {
+		// If halfpipe.io file is missing, no need to continue..
 		return results, nil
 	}
 
 	manifest, err := l.ManifestReader.ParseManifest(l.Config.RepoRoot)
-	for _, linter := range l.Linters[1:] {
+	if err != nil {
+		return []model.Result{}, err
+	}
+	linters := []Linter{
+		l.RequiredFieldsLinter,
+		l.RepoLinter,
+	}
+	for _, linter := range linters {
 		r, err = linter.LintManifest(manifest)
 		if err != nil {
 			return []model.Result{}, err

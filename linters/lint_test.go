@@ -17,8 +17,8 @@ var _ = Describe("Lint", func() {
 		// Mocks
 		mockCtrl            *gomock.Controller
 		requiredFilesLinter *mocks.MockLinter
-		linter1             *mocks.MockLinter
-		linter2             *mocks.MockLinter
+		requredFieldsLinter *mocks.MockLinter
+		repoLinter          *mocks.MockLinter
 		manifestReader      *mocks.MockManifestReader
 	)
 
@@ -29,17 +29,15 @@ var _ = Describe("Lint", func() {
 
 		mockCtrl = gomock.NewController(GinkgoT())
 		requiredFilesLinter = mocks.NewMockLinter(mockCtrl)
-		linter1 = mocks.NewMockLinter(mockCtrl)
-		linter2 = mocks.NewMockLinter(mockCtrl)
+		requredFieldsLinter = mocks.NewMockLinter(mockCtrl)
+		repoLinter = mocks.NewMockLinter(mockCtrl)
 		manifestReader = mocks.NewMockManifestReader(mockCtrl)
 
 		fullLint = FullLint{Config: config,
-			Linters: []Linter{
-				requiredFilesLinter,
-				linter1,
-				linter2,
-			},
 			ManifestReader: manifestReader,
+			RequiredFilesLinter: requiredFilesLinter,
+			RequiredFieldsLinter: requredFieldsLinter,
+			RepoLinter: repoLinter,
 		}
 	})
 
@@ -59,10 +57,11 @@ var _ = Describe("Lint", func() {
 		result3 := model.Result{Linter: "c"}
 
 		requiredFilesLinter.EXPECT().Lint().Return(result1, nil)
+
 		manifest := model.Manifest{}
 		manifestReader.EXPECT().ParseManifest(config.RepoRoot).Return(manifest, nil)
-		linter1.EXPECT().LintManifest(manifest).Return(result2, nil)
-		linter2.EXPECT().LintManifest(manifest).Return(result3, nil)
+		requredFieldsLinter.EXPECT().LintManifest(manifest).Return(result2, nil)
+		repoLinter.EXPECT().LintManifest(manifest).Return(result3, nil)
 
 		results, err := fullLint.Lint()
 		Expect(err).ToNot(HaveOccurred())

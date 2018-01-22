@@ -22,13 +22,13 @@ var _ = Describe("RequiredFiles", func() {
 	})
 
 	It("Returns error if .halfpipe.io is missing", func() {
-		results, _ := linters.NewRequiredFilesLinter(fs, config).Lint()
+		results, _ := linters.RequiredFilesLinter{fs, config}.Lint()
 		Expect(len(results.Errors)).To(Equal(1))
 	})
 
 	It("Returns empty error if .halfpipe.io is present", func() {
 		afero.WriteFile(fs, "/path/to/repo/.halfpipe.io", []byte(""), 0644)
-		results, _ := linters.NewRequiredFilesLinter(fs, config).Lint()
+		results, _ := linters.RequiredFilesLinter{fs, config}.Lint()
 		Expect(len(results.Errors)).To(Equal(0))
 	})
 })

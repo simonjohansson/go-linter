@@ -6,22 +6,22 @@ import (
 	"path"
 )
 
-type requiredFiles struct {
-	fs     afero.Fs
-	config model.LinterConfig
+type RequiredFilesLinter struct {
+	Fs     afero.Fs
+	Config model.LinterConfig
 }
 
-func (r requiredFiles) LintManifest(manifest model.Manifest) (model.Result, error) {
+func (r RequiredFilesLinter) LintManifest(manifest model.Manifest) (model.Result, error) {
 	panic("implement me")
 }
 
-func (r requiredFiles) Lint() (model.Result, error) {
+func (r RequiredFilesLinter) Lint() (model.Result, error) {
 	result := model.Result{
 		Linter: "Required Files",
 	}
 
-	pathToHalfPipeFile := path.Join(r.config.RepoRoot, ".halfpipe.io")
-	exists, err := afero.Exists(r.fs, pathToHalfPipeFile)
+	pathToHalfPipeFile := path.Join(r.Config.RepoRoot, ".halfpipe.io")
+	exists, err := afero.Exists(r.Fs, pathToHalfPipeFile)
 	if err != nil {
 		return model.Result{}, err
 	}
@@ -34,11 +34,4 @@ func (r requiredFiles) Lint() (model.Result, error) {
 	}
 
 	return result, nil
-}
-
-func NewRequiredFilesLinter(fs afero.Fs, config model.LinterConfig) requiredFiles {
-	return requiredFiles{
-		fs:     fs,
-		config: config,
-	}
 }

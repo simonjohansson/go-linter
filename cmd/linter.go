@@ -51,12 +51,14 @@ func main() {
 		syscall.Exit(-1)
 	}
 
-	results, err := linters.FullLint{Config: config,
-		Linters: []linters.Linter{
-			linters.NewRequiredFilesLinter(afero.NewOsFs(), config),
-			linters.NewRequiredFieldsLinter(),
-		},
-		ManifestReader: manifest.NewManifestReader(afero.NewOsFs())}.Lint()
+	results, err := linters.FullLint{
+		Config:               config,
+		ManifestReader:       manifest.NewManifestReader(afero.NewOsFs()),
+		RequiredFilesLinter:  linters.RequiredFilesLinter{afero.NewOsFs(), config},
+		RequiredFieldsLinter: linters.RequiredFieldsLinter{},
+		RepoLinter:           linters.RepoLinter{},
+	}.Lint()
+
 	if err != nil {
 		fmt.Println(err)
 		syscall.Exit(-1)

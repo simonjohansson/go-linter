@@ -113,6 +113,10 @@ func (m manifestReader) ParseManifest(repoRoot string) (model.Manifest, error) {
 			tasks = append(tasks, m.parseDockerTask(t))
 		case "deploy":
 			tasks = append(tasks, m.parseDeployTask(t, manifest.Team))
+		case nil:
+			return model.Manifest{}, errors.New("Task is missing 'task' key" )
+		default:
+			return model.Manifest{}, errors.New("Task '"+ t["task"].(string) +"' is not supported" )
 		}
 	}
 

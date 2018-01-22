@@ -1,14 +1,16 @@
 package linters
 
-import "github.com/simonjohansson/go-linter/model"
+import (
+	"github.com/simonjohansson/go-linter/model"
+)
 
-type requiredFields struct{}
+type RequiredFieldsLinter struct{}
 
-func (requiredFields) Lint() (model.Result, error) {
+func (RequiredFieldsLinter) Lint() (model.Result, error) {
 	panic("implement me")
 }
 
-func (requiredFields) LintManifest(manifest model.Manifest) (model.Result, error) {
+func (RequiredFieldsLinter) LintManifest(manifest model.Manifest) (model.Result, error) {
 	errors := []model.Error{}
 	if (manifest.Team == "") {
 		errors = append(errors, model.Error{Message: "Required top level field 'team' missing"})
@@ -19,10 +21,9 @@ func (requiredFields) LintManifest(manifest model.Manifest) (model.Result, error
 	if (len(manifest.Tasks) == 0) {
 		errors = append(errors, model.Error{Message: "Tasks is empty..."})
 	}
+
 	return model.Result{
 		"Required Fields",
 		errors,
 	}, nil
 }
-
-func NewRequiredFieldsLinter() requiredFields { return requiredFields{} }
