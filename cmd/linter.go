@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"github.com/spf13/afero"
 	"github.com/simonjohansson/go-linter/manifest"
+	"github.com/simonjohansson/go-linter/render"
 )
 
 func getPath(path string) (string, error) {
@@ -66,4 +67,10 @@ func main() {
 	for _, result := range results {
 		fmt.Println(result)
 	}
+
+	manifest, _ := manifest.NewManifestReader(afero.NewOsFs()).ParseManifest(config.RepoRoot)
+
+	concoursePipeline := render.ConcourseRenderer{}.RenderToString(manifest)
+	fmt.Println(string(concoursePipeline))
+
 }
